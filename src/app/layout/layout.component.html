@@ -1,0 +1,662 @@
+<!-- nav header section -->
+<nav class="navbar">
+    <div class="container-fluid">
+        <div class="row g-3 w-100">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                    <a href="#" class="btn "><i class="fa fa-angle-left"></i> Home</a>
+
+                    <div class="dropdown">
+                        <button class="btn btn_share" type="button" id="dropdownMenuShare" data-bs-toggle="dropdown"
+                            aria-expanded="false">
+                            Resize
+                        </button>
+                        <ul class="dropdown-menu p-3" aria-labelledby="dropdownMenuShare">
+                            <li>
+                                <p>Custom size</p>
+                            </li>
+                            <li class="">
+                                <label for="customsize_x" style="width:55%">Width
+                                    <input type="text" name="size_x" style="width:80%" id="customsize_x"
+                                        class="form-control" [(ngModel)]="canvas.size.width" (keyup)="changeSize()"></label>
+                                <label for="customsize_y" style="width:45%">Height
+                                    <input type="text" name="size_y" id="customsize_y" class="form-control"
+                                    [(ngModel)]="canvas.size.height" (keyup)="changeSize()"></label>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="actions d-inline-flex">
+                        <button class="btn" (click)="undo()" [disabled]="canvas.state.length == 0 || canvas.state.length == canvas.mods">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                                <path fill="currentColor"
+                                    d="M6.05 7.25l2.22-2.22A.75.75 0 0 0 7.2 3.97L4.43 6.75c-.69.68-.69 1.8 0 2.48l2.83 2.83A.75.75 0 0 0 8.32 11L6.07 8.75H16a4.25 4.25 0 1 1 0 8.5h-4a.75.75 0 1 0 0 1.5h4a5.75 5.75 0 0 0 0-11.5H6.05z">
+                                </path>
+                            </svg>
+                        </button>
+                        <button class="btn" (click)="redo()" [disabled]="canvas.mods == 0">
+                            <svg width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                <path fill="currentColor"
+                                    d="M18.054 7.252l-2.296-2.296a.75.75 0 0 1 1.06-1.06l2.83 2.828a1.75 1.75 0 0 1 0 2.475l-2.832 2.831a.75.75 0 0 1-1.06-1.06l2.219-2.22H8a4.25 4.25 0 0 0 0 8.5h4a.75.75 0 0 1 0 1.5H8a5.75 5.75 0 0 1 0-11.5h10c.018 0 .036 0 .054.002z">
+                                </path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-8">
+                <div class="d-flex align-items-center justify-content-end">
+                    <button class="btn right_btns" (click)="rasterize();">
+                        <i class="fa fa-download" aria-hidden="true"></i> Export to image</button>
+                    <button class="btn right_btns" (click)="rasterizeSVG();">
+                        <i class="fa fa-download" aria-hidden="true"></i> Export to SVG</button>
+                    <button type="button" class="btn right_btns" (click)="saveCanvasToJSON();">
+                        <i class="fa fa-save" aria-hidden="true"></i> Save local</button>
+                    <button type="button" class="btn right_btns" (click)="loadCanvasFromJSON();">
+                        <i class="fa fa-save" aria-hidden="true"></i> Load local</button>
+                    <button type="button" class="btn right_btns btn-danger" (click)="confirmClear();">
+                        <i class="fa fa-ban" aria-hidden="true"></i> Clean</button>
+                    <!-- dots btn -->
+                </div>
+            </div>
+        </div>
+    </div>
+</nav>
+<div class="d-flex main__content" style="overflow: hidden;">
+    <!-- left sidebar -->
+    <div class="d-flex align-items-start" style="z-index: 1;">
+        <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
+            <a class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" (click)="openTryFunction(0)"
+                href="#v-pills-home" type="button" role="tab" aria-controls="v-pills-home" aria-selected="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="currentColor" fill-rule="evenodd"
+                        d="M19.5 10V5a.5.5 0 0 0-.5-.5h-4.5V10h5zm0 1.5h-5v8H19a.5.5 0 0 0 .5-.5v-7.5zm-6.5-7H5a.5.5 0 0 0-.5.5v14c0 .28.22.5.5.5h8v-15zM5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2z">
+                    </path>
+                </svg>
+                <span>Templates</span>
+            </a>
+            <a class="nav-link" id="v-pills-elements-tab" (click)="openTryFunction(1)" data-bs-toggle="pill"
+                href="#v-pills-elements" type="button" role="tab" aria-controls="v-pills-elements"
+                aria-selected="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"
+                        d="M6.5 4.25l.75-.75a2.121 2.121 0 0 1 3 3L6.5 10.25 2.75 6.5a2.121 2.121 0 0 1 3-3l.75.75zm7 6l4-7.5 4 7.5h-8zm-10.75 3.5h7.5v7.5h-7.5v-7.5zm14.75-.25a4 4 0 1 0 0 8 4 4 0 0 0 0-8z">
+                    </path>
+                </svg>
+                <span>Elements</span>
+            </a>
+            <a class="nav-link" id="v-pills-photos-tab" (click)="openTryFunction(2)" data-bs-toggle="pill"
+                href="#v-pills-photos" type="button" role="tab" aria-controls="v-pills-photos" aria-selected="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="currentColor"
+                        d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5c0-1.1.9-2 2-2zm0 1.5a.5.5 0 0 0-.5.5v14c0 .28.22.5.5.5h14a.5.5 0 0 0 .5-.5V5a.5.5 0 0 0-.5-.5H5zm5.75 10.1l3.05-4.15a2 2 0 0 1 3.22-.01L21 15.78V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-.09l3.82-5.25a2 2 0 0 1 3.22 0l.7.95zm3.6 4.9H19a.5.5 0 0 0 .5-.5v-2.72l-3.69-4.94a.5.5 0 0 0-.8 0l-3.33 4.53 2.68 3.63zm-5.51-4.96a.5.5 0 0 0-.81 0l-3.44 4.74a.5.5 0 0 0 .41.22h7.5l-3.66-4.96zM8.5 10a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z">
+                    </path>
+                </svg>
+                <span>Photos</span>
+            </a>
+            <a class="nav-link" (click)="openTryFunction(3)" id="v-pills-texts-tab" data-bs-toggle="pill"
+                href="#v-pills-texts" type="button" role="tab" aria-controls="v-pills-texts" aria-selected="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path fill="currentColor" fill-rule="evenodd"
+                        d="M18 5.5h-5.25V18c0 .28.22.5.5.5h2a.75.75 0 1 1 0 1.5h-6.5a.75.75 0 1 1 0-1.5h2a.5.5 0 0 0 .5-.5V5.5H6a.5.5 0 0 0-.5.5v1.25a.75.75 0 0 1-1.5 0V5.5C4 4.67 4.67 4 5.5 4h13c.83 0 1.5.67 1.5 1.5v1.75a.75.75 0 1 1-1.5 0V6a.5.5 0 0 0-.5-.5z">
+                    </path>
+                </svg>
+                <span>Text</span>
+            </a>
+            <a class="nav-link" (click)="openTryFunction(4)" id="v-pills-backgroud-tab" data-bs-toggle="pill"
+                href="#v-pills-backgroud" type="button" role="tab" aria-controls="v-pills-backgroud" aria-selected="false">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24">
+                    <path
+                        d="M4.03 21.03a.75.75 0 0 1-1.06-1.06l17-17a.75.75 0 0 1 1.06 1.06l-17 17zm4.5.5a.75.75 0 0 1-1.06-1.06l13-13a.75.75 0 0 1 1.06 1.06l-13 13zm5 0a.75.75 0 0 1-1.06-1.06l8-8a.75.75 0 0 1 1.06 1.06l-8 8zm5.5-.5a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 1.06l-2 2zm-15.5-4.5a.75.75 0 0 1-1.06-1.06l13-13a.75.75 0 0 1 1.06 1.06l-13 13zm0-5a.75.75 0 0 1-1.06-1.06l8-8a.75.75 0 0 1 1.06 1.06l-8 8zm.5-5.5a.75.75 0 0 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 1.06l-2 2z"
+                        fill="currentColor"></path>
+                </svg>
+                <span>Backgroud</span>
+            </a>
+        </div>
+
+        <!-- tab filter content start -->
+        <div class="tab-content  position-relative" id="v-pills-tabContent" *ngIf="!istabedViewed">
+            <button class="btn rightSideControlBtn position-absolute" (click)="ShowHide(true)">
+                <svg width="15" height="96" viewBox="0 0 15 96" fill="#c3c3c3" xmlns="http://www.w3.org/2000/svg"
+                    class="SUDcEg">
+                    <path
+                        d="M0 0H3V1.00588C3.0011 4.42584 3.9102 9.97716 7.27295 13.2873C7.45088 13.4625 7.62629 13.6347 7.79957 13.8048L7.85959 13.8637C9.89318 15.8599 11.6678 17.602 12.9234 19.7206C14.0939 21.6956 14.792 23.9527 14.9602 27H15V68C15 71.7381 14.3125 74.3685 13.0144 76.6235C11.7533 78.8142 9.94312 80.5911 7.86152 82.6344L7.79905 82.6957C7.62594 82.8656 7.4507 83.0377 7.27295 83.2127C3.9102 86.5228 3.0011 92.0739 3 95.4938V96H0V0Z"
+                        class="vu-d0A"></path>
+                    <path
+                        d="M3 0H2V1.00619C2.0011 4.50696 2.9164 10.4021 6.57143 14C6.74993 14.1757 6.92582 14.3484 7.09903 14.5184C11.2616 18.6046 13.8752 21.1704 13.9957 28H14V68C14 75.2071 11.3611 77.7976 7.09857 81.9821L7.07621 82.004C6.91037 82.1668 6.7421 82.332 6.57143 82.5C2.9164 86.0979 2.0011 91.993 2 95.4938V96H3V95.4938C3.0011 92.0739 3.9102 86.5228 7.27295 83.2127C7.4507 83.0377 7.62594 82.8656 7.79905 82.6957L7.86152 82.6344C9.94312 80.5911 11.7533 78.8142 13.0144 76.6235C14.3125 74.3685 15 71.7381 15 68V27H14.9602C14.792 23.9527 14.0939 21.6956 12.9234 19.7206C11.6678 17.602 9.89318 15.8599 7.85959 13.8637L7.79957 13.8048C7.62629 13.6347 7.45088 13.4625 7.27295 13.2873C3.9102 9.97716 3.0011 4.42584 3 1.00588V0Z"
+                        class="mcI_jw"></path>
+                </svg>
+                <span aria-hidden="true" class="position-center"><i class="bi bi-chevron-left"></i></span>
+            </button>
+
+            <!-- Templates -->
+            <div class="tab-pane fade {{tabselected==0?' show active ' : ''}}" id="v-pills-home" role="tabpanel"
+                aria-labelledby="v-pills-home-tab">
+                <div class="p-3">
+                    <form class="input-group">
+                        <span class="input-group-text" id="search_adon">
+                            <img src="assets/images/icons/search.svg" width="18" height="18" alt="search-icon">
+                        </span>
+                        <input type="text" class="form-control" placeholder="How would you like to publish?"
+                            aria-label="How would you like to publish?" aria-describedby="search_adon">
+                    </form>
+                </div>
+                <div class="scroll__content p-3">
+                    <!-- =============== -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2">
+                        <p class=" mb-0"><strong>Templates</strong></p>
+                        <a href="#" class="small link ">See all</a>
+                    </div>
+                    <div class="slider__wrapper row">
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_1.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_2.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_3.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_4.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_1.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_2.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_3.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_4.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_1.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_2.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_3.webp" class="img-fluid">
+                        </div>
+                        <div class="position-relative temp__item col-6 pb-3">
+                            <img src="assets/images/img_4.webp" class="img-fluid">
+                        </div>
+                    </div>
+                    <!-- =============== -->
+                </div>
+            </div>
+            <!--.//Templates-->
+
+            <!-- ===== Elements ================================================================================ -->
+            <div class="tab-pane fade {{tabselected==1?' show active ' : ''}}" id="v-pills-elements" role="tabpanel"
+                aria-labelledby="v-pills-elements-tab">
+                <div class="p-3">
+                    <form class="input-group">
+                        <span class="input-group-text" id="search_adon">
+                            <img src="assets/images/icons/search.svg" width="18" height="18" alt="search-icon">
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search anything from canva"
+                            aria-label="Search anything from canva" aria-describedby="search_adon">
+                    </form>
+                </div>
+                <div class="scroll__content p-3">
+
+                    <div class="d-flex justify-content-between align-items-center mt-4 mb-2 pe-2">
+                        <p class=" mb-0"><strong>Line & Shapes</strong></p>
+                        <a href="#" class="small link ">See all</a>
+                    </div>
+                    <ul class="photos__box">
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/full-rectangle.svg" alt="Rectangle" class="shape__img"
+                                    (click)="addFigure('rectangle')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/full-square.svg" alt="Square" class="shape__img"
+                                    (click)="addFigure('square')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/full-circle.svg" alt="Circle" class="shape__img"
+                                    (click)="addFigure('circle')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/full-triangle.svg" alt="Triangle" class="shape__img"
+                                    (click)="addFigure('triangle')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/inline-rectangle.svg" alt="Rectangle" class="shape__img"
+                                    (click)="addFigure('rectangle')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/inline-square.svg" alt="Inline square" class="shape__img"
+                                    (click)="addFigure('square')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/inline-circle.svg" alt="Inline circle" class="shape__img"
+                                    (click)="addFigure('circle')">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative shape__item">
+                                <img src="assets/images/ele/inline-triangle.svg" alt="Inline triangle"
+                                    class="shape__img" (click)="addFigure('triangle')">
+                            </div>
+                        </li>
+                    </ul>
+
+                    <!-- =============== -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2 pe-2">
+                        <p class=" mb-0"><strong>Graphics</strong></p>
+                        <a href="#" class="small link ">See all</a>
+                    </div>
+                    <ul class="photos__box">
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/graphics/g-1.webp" class="photos__img me-3" width="80px"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/graphics/g-5.webp" class="photos__img" width="130px"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/graphics/g-3.webp" class="photos__img" width="110px"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/graphics/g-4.webp" class="photos__img" width="100px"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/graphics/g-2.webp" class="photos__img" width="140px"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                    </ul>
+
+                </div>
+            </div>
+            <!--..//Elements-->
+
+            <!-- ===== Photos ================================================================================ -->
+            <div class="tab-pane fade position-relative {{tabselected==2?' show active ' : ''}}" id="v-pills-photos"
+                role="tabpanel" aria-labelledby="v-pills-photos-tab">
+                <div class="p-3">
+                    <form class="input-group">
+                        <span class="input-group-text" id="search_adon">
+                            <img src="assets/images/icons/search.svg" width="18" height="18" alt="search-icon">
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search anything from canva"
+                            aria-label="Search anything from canva" aria-describedby="search_adon">
+                    </form>
+                </div>
+                <div class="scroll__content  p-3">
+                    <!-- =============== -->
+                    <div class="d-flex justify-content-between align-items-center mt-3 mb-2 pe-2">
+                        <p class=" mb-0"><strong>Photos</strong></p>
+                        <a href="#" class="small link ">See all</a>
+                    </div>
+                    <ul class="photos__box">
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-1.jpg" class="photos__img" width="72"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-2.webp" class="photos__img" width="162"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-4.jpg" class="photos__img" width="117"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-5.jpg" class="photos__img" width="117"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-3.jpg" class="photos__img" width="75"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-6.jpg" class="photos__img" width="75"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                        <li class="d-inline-block">
+                            <div class="position-relative temp__item">
+                                <img src="assets/images/eph/p-7.jpg" class="photos__img" width="75"
+                                    (click)="addPhotos($event)">
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!--..//Elements-->
+
+
+            <!-- text  ================================================================================== -->
+            <div class="tab-pane fade {{tabselected==3?' show active ' : ''}}" id="v-pills-texts" role="tabpanel"
+                aria-labelledby="v-pills-texts-tab">
+                <div class="p-3">
+                    <form class="input-group">
+                        <span class="input-group-text" id="search_adon">
+                            <img src="assets/images/icons/search.svg" width="18" height="18" alt="search-icon">
+                        </span>
+                        <input type="text" class="form-control" placeholder="Search text" aria-label="Search text"
+                            aria-describedby="search_adon">
+                    </form>
+                </div>
+                <div class="text__scroll__box px-3">
+                    <p class=""><strong>Click text to add to page</strong></p>
+                    <div class="btns">
+                        <button class="btn heading__btn" (click)="addText(100)">Add a heading</button>
+                        <button class="btn sub__heading heading__btn" (click)="addText(120)">Add a subheading</button>
+                        <button class="btn body__text heading__btn" (click)="addText(140)">Add a little bit of body
+                            text</button>
+                    </div>
+
+
+                    <p class="pt-3" *ngIf="canvas.selected && canvas.textEditor"><strong>Text Properties</strong></p>
+                    <div class="custom-item" *ngIf="canvas.selected && canvas.textEditor">
+                        <div class="custom-item-title">Font family</div>
+                        <div class="custom-item-body">
+                            <select [(ngModel)]="canvas.props.fontFamily" style="padding-left: 0.75rem; border-left: 1px solid #ced4da !important;" class="form-control" (change)="setFontFamily()">
+                                <option value="arial">Arial</option>
+                                <option value="helvetica" selected>Helvetica</option>
+                                <option value="verdana">Verdana</option>
+                                <option value="courier">Courier</option>
+                                <option value="Roboto">Roboto</option>
+                                <option value="Open Sans">Open Sans</option>
+                                <option value="Zilla Slab">Zilla Slab</option>
+                                <option value="Lato">Lato</option>
+                                <option value="Bellefair">Bellefair</option>
+                                <option value="Fresca">Fresca</option>
+                                <option value="Raleway">Raleway</option>
+                                <option value="Open Sans Condensed">Open Sans Condensed</option>
+                                <option value="Indie Flower">Indie Flower</option>
+                                <option value="Josefin Sans">Josefin Sans</option>
+                                <option value="Inconsolata">Inconsolata</option>
+                                <option value="Pacifico">Pacifico</option>
+                                <option value="Gloria Hallelujah">Gloria Hallelujah</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
+                        <!-- <div class="custom-item-title">Text Align</div> -->
+                        <div class="custom-item-body">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'left' }" (click)="setTextAlign('left')">
+                                    <i class="fa fa-align-left m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'center' }" (click)="setTextAlign('center')">
+                                    <i class="fa fa-align-center m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'right' }" (click)="setTextAlign('right')">
+                                    <i class="fa fa-align-right m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'justify' }" (click)="setTextAlign('justify')">
+                                    <i class="fa fa-align-justify m-0"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
+                        <!-- <div class="custom-item-title">Style</div> -->
+                        <div class="custom-item-body ">
+                            <div class="btn-group" role="group" aria-label="...">
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': canvas.props.fontWeight }" (click)="setBold()">
+                                    <i class="fa fa-bold m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': canvas.props.fontStyle }" (click)="setFontStyle()">
+                                    <i class="fa fa-italic m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': hasTextDecoration('underline') }"
+                                    (click)="setTextDecoration('underline')">
+                                    <i class="fa fa-underline m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': hasTextDecoration('overline') }"
+                                    (click)="setTextDecoration('overline')">
+                                    <i class="fa fa-underline fa-flip-vertical m-0"></i>
+                                </button>
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': hasTextDecoration('line-through') }"
+                                    (click)="setTextDecoration('line-through')">
+                                    <i class="fa fa-strikethrough m-0"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
+                        <div class="custom-item-title">Font Size</div>
+                        <div class="custom-item-body">
+                            <div class="d-flex justify-content-start align-items-center fontSize-height border">
+                                <input class="font-input" [(ngModel)]="canvas.props.fontSize" (change)="setFontSize()" list="menace" name="menace">
+                                <div class="allow-down-icon"><img src="assets/images/icons/caret-down-solid.svg" width="18" height="18" alt="allow-down-icon"></div>
+                            </div>    
+                            <datalist id="menace">
+                                <option *ngFor="let menace of menaces">{{ menace }}</option>
+                            </datalist>
+                            <!-- <input type="range" [(ngModel)]="canvas.props.fontSize" (change)="setFontSize()" step="1" min="1" max="120">{{canvas.props.fontSize}}</div> -->
+                    </div>
+                    <!-- <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
+                        <div class="custom-item-title">Line Height</div>
+                        <div class="custom-item-body">
+                            <input type="range" [(ngModel)]="canvas.props.lineHeight" (change)="setLineHeight()" step="0.1" min="0" max="10">{{canvas.props.lineHeight}}</div>
+                    </div>
+                    <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
+                        <div class="custom-item-title">Char Spacing</div>
+                        <div class="custom-item-body">
+                            <input type="range" [(ngModel)]="canvas.props.charSpacing" (change)="setCharSpacing()" step="10" min="-200" max="800">{{canvas.props.charSpacing}}</div>
+                    </div> -->
+                </div>
+            </div>
+            <!--.//text-->
+
+            <!-- background  ================================================================================== -->
+            <div class="tab-pane fade {{tabselected==4?' show active ' : ''}}" id="v-pills-backgroud" role="tabpanel"
+                aria-labelledby="v-pills-backgroud-tab">
+                
+                <div class="text__scroll__box px-3">
+                    <div class="pt-4 pb-3 border-bottom" *ngIf="!canvas.props.canvasImage">
+                        <div class="custom-item-title"><strong>Background Color</strong></div>
+                        <div class="custom-item-body">
+                            <input type="text" style="padding-left: 0.75rem; border-left: 1px solid #ced4da !important;" class="form-control" [cpPosition]="'bottom'" [(colorPicker)]="canvas.props.canvasFill" [style.background]="canvas.props.canvasFill"
+                                [value]="canvas.props.canvasFill" (colorPickerChange)="setCanvasFill()">
+                        </div>
+                    </div>
+                    <div class="pt-4">
+                        <div class="custom-item-title"><strong>Background Image (url)</strong></div>
+                        <div class="custom-item-body">
+                            <input type="text" style="padding-left: 0.75rem; border-left: 1px solid #ced4da !important;" class="form-control" placeholder="http://example.jpg" [(ngModel)]="canvas.props.canvasImage" (keyup)="setCanvasImage()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!--.//text-->
+
+            <!-- Note Box control from right panel -> bottom section  ================================================================================== -->
+            <div class="note__wrapp fade" id="jsOpenedNoteBox">
+                <div class="input-group ps-2">
+                    <label for="page__title" class="fw-600 input-group-text w-auto">Page 1 -</label>
+                    <input type="text" name="page__title" id="page__title" class="form-control border-0"
+                        placeholder="Add page title">
+                </div>
+                <div class="ps-2">
+                    <textarea name="note" id="note" cols="30" rows="18" class="form-control border-0 ps-2"
+                        placeholder="Note will be displaed in presenter view"></textarea>
+                </div>
+            </div>
+        </div>
+        <!--.//tab_-content-->
+    </div>
+
+    <!-- ******* Right Panel ******* --------------------------------------------------------------------******* ------------------------------------------------------------>
+    <div class="right__panel" id="rightActionPanel">
+        <div class="header__panel p-1">
+            <div class="d-flex justify-content-between">
+                <div class="d-flex align-items-center">
+                    <div class="d-flex justify-content-between align-items-center" *ngIf="canvas.selected && canvas.selected.type != 'group'">
+                        <div class="custom-item-title">&nbsp;&nbsp;&nbsp;&nbsp;<strong>OPACITY:</strong> &nbsp;&nbsp;</div>
+                        <div class="d-flex align-items-center border">
+                            <input class="font-input" list="menace" name="menace" value="100">                        
+                            <img src="assets/images/icons/caret-down-solid.svg" width="18" height="18" alt="allow-down-icon">
+                        </div>
+                        <datalist id="menace">
+                            <option *ngFor="let opacity of opacities">{{ opacity }}</option>
+                        </datalist>
+                        
+                        <!-- <input type="range" [(ngModel)]="canvas.props.opacity" (change)="setOpacity()">{{canvas.props.opacity}} -->
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center" *ngIf="canvas.selected && canvas.textEditor || canvas.selected && canvas.figureEditor">
+                        <div class="custom-item-title">&nbsp;&nbsp;&nbsp;&nbsp;<strong>COLOR:</strong> &nbsp;&nbsp;</div>
+                        <div class="custom-item-body">
+                            <div class="d-flex justify-content-between align-items-center border">
+                                <input ejs-colorpicker type="color" id="colorpicker" />
+                                <div class="color-field-icon"><img src="assets/images/icons/caret-down-solid.svg" width="18" height="18" alt="allow-down-icon"></div>
+                            </div>                               
+                        </div>
+                    </div>
+                </div>
+
+                <div class="d-flex align-items-center right__wrapp">
+                    <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected" (click)="removeSelected();">
+                        <span class="badge bg-dark tooltip">Delete element</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M8 5a3 3 0 0 1 3-3h2a3 3 0 0 1 3 3h4.25a.75.75 0 1 1 0 1.5H19V18a3 3 0 0 1-3 3H8a3 3 0 0 1-3-3V6.5H3.75a.75.75 0 0 1 0-1.5H8zM6.5 6.5V18c0 .83.67 1.5 1.5 1.5h8c.83 0 1.5-.67 1.5-1.5V6.5h-11zm3-1.5h5c0-.83-.67-1.5-1.5-1.5h-2c-.83 0-1.5.67-1.5 1.5zm-.25 4h1.5v8h-1.5V9zm4 0h1.5v8h-1.5V9z">
+                            </path>
+                        </svg>
+                    </button>
+
+                    <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected" (click)="sendToBack();">
+                        <span class="badge bg-dark tooltip">Send to back</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M19.48 10.82l1.7.83a1 1 0 0 1 0 1.8L15 16.49V14.8l4.6-2.26-1.82-.9 1.7-.83zm-14.96 0l-1.7.83a1 1 0 0 0 0 1.8L9 16.49V14.8l-4.6-2.26 1.82-.9-1.7-.83zm8.23 9.5L15 18.07a.75.75 0 0 1 1.06 1.06l-2.83 2.83c-.68.68-1.79.68-2.47 0l-2.83-2.83a.75.75 0 0 1 1.06-1.06l2.26 2.26V6.9a.75.75 0 1 1 1.5 0v13.43zM15 11.35V9.68l4.6-2.27L12.66 4c-.42-.2-.9-.2-1.32 0L4.4 7.4 9 9.68v1.67L2.82 8.3a1 1 0 0 1 0-1.8l7.86-3.86a3 3 0 0 1 2.64 0l7.86 3.87a1 1 0 0 1 0 1.79L15 11.35z">
+                            </path>
+                        </svg>
+                    </button>
+                    <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected" (click)="bringToFront();">
+                        <span class="badge bg-dark tooltip">Send to front</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 0 24 24">
+                            <path fill="currentColor"
+                                d="M12.75 3.82v9.43a.75.75 0 1 1-1.5 0V3.81L8.99 6.07A.75.75 0 1 1 7.93 5l2.83-2.83a1.75 1.75 0 0 1 2.47 0L16.06 5A.75.75 0 0 1 15 6.07l-2.25-2.25zM15 8.48l6.18 3.04a1 1 0 0 1 0 1.79l-7.86 3.86a3 3 0 0 1-2.64 0l-7.86-3.86a1 1 0 0 1 0-1.8L9 8.49v1.67L4.4 12.4l6.94 3.42c.42.2.9.2 1.32 0l6.94-3.42-4.6-2.26V8.48zm4.48 7.34l1.7.83a1 1 0 0 1 0 1.8l-7.86 3.86a3 3 0 0 1-2.64 0l-7.86-3.86a1 1 0 0 1 0-1.8l1.7-.83 1.7.83-1.82.9 6.94 3.41c.42.2.9.2 1.32 0l6.94-3.41-1.82-.9 1.7-.83z">
+                            </path>
+                        </svg>
+                    </button>
+                    <!-- <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected || canvas.selected.type == 'group'" (click)="clone();">
+                        <span class="badge bg-dark tooltip">Clone</span>
+                        <svg class="me-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <rect x="1.75" y="4.75" width="17.5" height="17.5" rx="1.25" stroke="currentColor"
+                                stroke-width="1.5"></rect>
+                            <path
+                                d="M4.75 1a.75.75 0 0 0 0 1.5H19.4c1.16 0 2.1.94 2.1 2.1v14.65a.75.75 0 0 0 1.5 0V4.2A3.2 3.2 0 0 0 19.8 1H4.75z"
+                                fill="currentColor"></path>
+                        </svg>
+                    </button>
+                    <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected" (click)="cleanSelect();">
+                        <span class="badge bg-dark tooltip">Unselect</span>
+                        <i class="fa fa-remove" aria-hidden="true"></i>
+                    </button> -->
+                </div>
+            </div>
+        </div>
+
+        <div class="top__panel">
+            <div class="text-center d-flex justify-content-center w-100  py-5">
+                <angular-editor-fabric-js #canvas (selectedEvent)="canvasselect($event)"></angular-editor-fabric-js>
+            </div>
+        </div>
+
+        <!-- bottom action panel ===> rightBottomActionPanel->added js from custom.js --------------------------->
+        <div class="bottom__panel w-100">
+            <button class="btn panelControlBtn position-absolute start-50 translate-x-middle">
+                <svg width="96" height="15" viewBox="0 0 96 15" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path
+                        d="M0 15V12H1.00588C4.42584 11.9989 9.97716 11.0898 13.2873 7.72705C13.4625 7.54912 13.6347 7.37371 13.8048 7.20043L13.8637 7.14041C15.8599 5.10682 17.602 3.33217 19.7206 2.07659C21.6956 0.906105 23.9527 0.207998 27 0.0398134V0H68C71.7381 0 74.3685 0.687476 76.6235 1.98561C78.8142 3.24675 80.5911 5.05688 82.6344 7.13848L82.6957 7.20095C82.8656 7.37406 83.0377 7.5493 83.2127 7.72705C86.5228 11.0898 92.0739 11.9989 95.4938 12H96V15H0Z"
+                        class="Axi-6A"></path>
+                    <path
+                        d="M0 12V13H1.00619C4.50696 12.9989 10.4021 12.0836 14 8.42857C14.1757 8.25007 14.3484 8.07418 14.5184 7.90097C18.6046 3.73843 21.1704 1.12476 28 1.00435V1H68C75.2071 1 77.7976 3.63885 81.9821 7.90143L82.004 7.92379C82.1668 8.08963 82.332 8.2579 82.5 8.42857C86.0979 12.0836 91.993 12.9989 95.4938 13H96V12H95.4938C92.0739 11.9989 86.5228 11.0898 83.2127 7.72705C83.0377 7.5493 82.8656 7.37406 82.6957 7.20095L82.6344 7.13848C80.5911 5.05688 78.8142 3.24675 76.6235 1.98561C74.3685 0.687476 71.7381 0 68 0H27V0.0398134C23.9527 0.207998 21.6956 0.906105 19.7206 2.07659C17.602 3.33217 15.8599 5.10682 13.8637 7.14041L13.8048 7.20043C13.6347 7.37371 13.4625 7.54912 13.2873 7.72705C9.97716 11.0898 4.42584 11.9989 1.00588 12H0Z"
+                        class="zl9Kag"></path>
+                </svg>
+                <span aria-hidden="true" class="position-center"><svg xmlns="http://www.w3.org/2000/svg" width="12"
+                        height="12" viewBox="0 0 12 12">
+                        <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="1.25"
+                            d="M8.83 7L6.7 4.88a1 1 0 0 0-1.42 0L3.17 7"></path>
+                    </svg></span>
+            </button>
+
+            <ul class="page__list flex-wrap">
+                <li>
+                    <div class="page active"></div>
+                    <span class="d-block text-center">1</span>
+                </li>
+                <li>
+                    <div class="page"></div>
+                    <span class="d-block text-center">1</span>
+                </li>
+                <li>
+                    <div class="page"></div>
+                    <span class="d-block text-center">1</span>
+                </li>
+                <li>
+                    <button class="btn addBtn"><i class="bi bi-plus-lg"></i></button>
+                </li>
+            </ul>
+
+            <div class="d-flex justify-content-between bottom__actions">
+                <div></div>
+
+                <div class="d-flex align-items-center right__wrapp">
+                    <div class="d-flex">
+                        <input type="range" class="form-range" id="customRange1" [ngModel]="zoom"
+                            (ngModelChange)="zoomChange($event)" min="10" max="300">
+                        <label for="customRange1" style="padding-top:3px" class="fw-600 ps-3" data-bs-toggle="tooltip"
+                            data-bs-placement="top" title="Tooltip on top">{{zoom}}%</label>
+                    </div>
+                    <!-- <button class="btn p-2 me-3" (click)="setzoom(50);"> &times;0.5</button>
+                    <button class="btn p-2 me-3" (click)="setzoom(100);"> &times;1</button>
+                    <button class="btn p-2 me-3" (click)="setzoom(200);"> &times;2</button>
+                    <button class="btn p-2 me-3" (click)="setzoom(300);"> &times;3</button> -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <!--.///right____panel-->
+
+</div>
