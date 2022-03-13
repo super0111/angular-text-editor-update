@@ -43,8 +43,6 @@ export class LayoutComponent implements OnInit {
   istabedViewed: boolean = false;
   tabselected = 0;
   zoom = 100
-  menaces = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
-  opacities = [0, 10,20,30,40,50,60,70,80,90,100];
   @HostListener("window:scroll", [])
   ngOnInit(): void {
     this.ShowHide(false);

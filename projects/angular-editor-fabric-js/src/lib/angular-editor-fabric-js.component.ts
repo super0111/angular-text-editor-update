@@ -207,7 +207,7 @@ export class FabricjsEditorComponent implements AfterViewInit {
         scaleX: 0.5,
         scaleY: 0.5,
         fontWeight: '',
-        hasRotatingPoint: true,
+        hasRotatingPoint: true
       });
 
       this.extend(text, this.randomId());
@@ -252,7 +252,6 @@ export class FabricjsEditorComponent implements AfterViewInit {
         });
         image.scaleToWidth(200);
         image.scaleToHeight(200);
-        
         this.extend(image, this.randomId());
         this.canvas.add(image);
         this.selectItemAfterAdded(image);
@@ -278,33 +277,28 @@ export class FabricjsEditorComponent implements AfterViewInit {
 
   addFigure(figure) {
     let add: any;
-    let toolTip : any;
     switch (figure) {
       case 'rectangle':
         add = new fabric.Rect({
           width: 200, height: 100, left: 10, top: 10, angle: 0,
-          fill: '#3f51b5',
+          fill: '#3f51b5'
         });
-        toolTip = 'This is Rectangle';
         break;
       case 'square':
         add = new fabric.Rect({
           width: 100, height: 100, left: 10, top: 10, angle: 0,
           fill: '#4caf50'
         });
-        toolTip = 'This is Square';
         break;
       case 'triangle':
         add = new fabric.Triangle({
           width: 100, height: 100, left: 10, top: 10, fill: '#2196f3'
         });
-        toolTip = 'This is Triangle';
         break;
       case 'circle':
         add = new fabric.Circle({
           radius: 50, left: 10, top: 10, fill: '#ff5722'
         });
-        toolTip = 'This is Circle';
         break;
       case 'ellipse':
         add = new fabric.Ellipse({
@@ -314,12 +308,11 @@ export class FabricjsEditorComponent implements AfterViewInit {
           stroke: 'green',
           strokeWidth: 3
         });
-        toolTip = 'This is Ellipse';
         break;
     }
-    this.extend({add, toolTip}, this.randomId());
-    this.canvas.add(add, toolTip);
-    this.selectItemAfterAdded({add, toolTip});
+    this.extend(add, this.randomId());
+    this.canvas.add(add);
+    this.selectItemAfterAdded(add);
   }
 
   /*Canvas*/
