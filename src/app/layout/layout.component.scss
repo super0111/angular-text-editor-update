@@ -1,9 +1,17 @@
-
+@import "../../../node_modules/@syncfusion/ej2-base/styles/material.css";
+@import "../../../node_modules/@syncfusion/ej2-buttons/styles/material.css";
+@import "../../../node_modules/@syncfusion/ej2-popups/styles/material.css";
+@import "../../../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css";
+@import "../../../node_modules/@syncfusion/ej2-inputs/styles/material.css";
 
 a {
     text-decoration: none;
 }
-
+.uploadLabel {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+}
 ul {
     padding-left: 0;
     margin-bottom: 0;
@@ -29,6 +37,49 @@ ul {
 
 .fw-600 {
     font-weight: 600;
+}
+.fontSize-height {
+    height: 20px;
+    width: 60px;
+}
+.font-input {
+    width: 41px;
+    height: 18px!important;
+    border: none;
+    outline: none;
+    border-radius: 3px;
+}
+.allow-down-icon {
+
+}
+.allow-down-icon img {
+    width: 8px;
+    height: auto;
+    // height: 10px;
+    opacity: 0.8;
+    margin-left: 5px;
+}
+.custom-item-title strong {
+    font-size: 14px;
+    color: #324851;
+}
+.custom-item-body {
+    margin-top: 3px;
+}
+datalist {
+    padding: 0 5px!important;
+}
+.border {
+    border: 1px solid rgb(59, 59, 59)!important;
+    border-radius: 3px;
+    cursor: pointer;
+}
+.color-field-icon {
+    display: flex;
+    align-items: center;
+}
+.border input {
+    height: 19px;
 }
 
 .navbar {
@@ -142,8 +193,8 @@ ul {
             }
         }
 
-        .btn-primary {
-            background: linear-gradient(90deg,#00c4cc,#7d2ae8);
+        .btns-primary {
+            // background: linear-gradient(90deg,#00c4cc,#7d2ae8);
             background-color: transparent; 
             border: 0;
             justify-content: center;
@@ -336,16 +387,16 @@ ul {
             height: 1px;
             display: none;
         }
-        .btn-primary {
+        .btns-primary {
             width: 100%;
             border-top-right-radius: 0;
             border-bottom-right-radius: 0;
         }
     }
-    .btn-primary { 
-        background-color: #7d2ae8;
+    .btns-primary { 
+        // background-color: #7d2ae8;
         color: #fff;
-        border-color: #7d2ae8;
+        // border-color: #7d2ae8;
         font-size: .875rem;
         font-weight: 600;
         min-height: 2.75rem;
@@ -353,9 +404,10 @@ ul {
         svg {
             width: 1.6rem;
             height: 1.6rem;
+            color: black;
         }
         &:hover {
-            background-color: #9240fd !important; 
+            // background-color: #9240fd !important; 
             border-color: #9240fd !important;
         }
         &.more {
@@ -365,6 +417,9 @@ ul {
             border-bottom-left-radius: 0;
         }
     }
+}
+.btn-group i {
+    color: #424242;
 }
 
 .other__uploads {
@@ -397,7 +452,7 @@ ul {
         padding-bottom: .15rem;
         cursor: pointer;
         &:hover {
-            background-color: #7d2ae8;
+            // background-color: #7d2ae8;
             color: #fff;
         }
     }
@@ -408,15 +463,15 @@ ul {
         text-decoration: underline;
     }
 }
-.btn-primary {
-    background-color: #7d2ae8;
-    border-color: #7d2ae8;
+.btns-primary {
+    // background-color: #7d2ae8;
+    // border-color: #7d2ae8;
     color: #fff;
     justify-content: center;
     font-weight: 600 !important;
     min-height: 2.5rem;
     &:hover {
-        background-color: #9240fd !important;
+        // background-color: #9240fd !important;
         border-color: #9240fd !important;
     }
 }
@@ -966,4 +1021,38 @@ ul {
 .shape__img{
     width: 40px;
 }
+
+.image-tooltip {
+    position: fixed;
+    top: 0px;
+    left: 50px;
+    z-index: 1;
+    visibility: hidden;
+    background: black;
+    opacity: 0.8;
+    color: #fff;
+    text-align: center;
+    width: 220px;
+    height: 35px;
+    border-radius: 5px;
+    font-size: 16px;
+    padding-top: 7px;
+}
+
+.image-tooltip:after{
+    border-left: solid transparent 7px;
+    border-right: solid transparent 7px;
+    border-top: solid black 7px;
+    bottom: -7px;
+    content: " ";
+    height: 0;
+    left: 50%;
+    margin-left: -13px;
+    position: absolute;
+    width: 0;
+    font-size: 20px;
+  }
+  .image-tooltip:before{
+
+  }
 

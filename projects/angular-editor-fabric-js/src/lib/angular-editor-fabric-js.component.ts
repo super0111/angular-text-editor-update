@@ -1,6 +1,29 @@
+import { analyzeAndValidateNgModules, NONE_TYPE } from '@angular/compiler';
 import { Component, ViewChild, ElementRef, AfterViewInit, Output, EventEmitter } from '@angular/core';
 import { fabric } from 'fabric';
 
+interface keyable {
+  [key: string]: any  
+}
+
+interface ITextOptionsWithId extends fabric.ITextOptions {
+  id: string
+}
+interface IImageOptionsWithId extends fabric.IImageOptions {
+  id: string
+}
+interface IRectOptionsWithId extends fabric.IRectOptions {
+  id: string
+}
+interface ITriangleOptionsWithId extends fabric.ITriangleOptions {
+  id: string
+}
+interface ICircleOptionsWithId extends fabric.ICircleOptions {
+  id: string
+}
+interface IEllipseOptionsWithId extends fabric.IEllipseOptions {
+  id: string
+}
 @Component({
   selector: 'angular-editor-fabric-js',
   templateUrl: './angular-editor-fabric-js.component.html',
@@ -41,6 +64,9 @@ export class FabricjsEditorComponent implements AfterViewInit {
   public figureEditor = false;
   public selected: any;
 
+  public tooltipStr = {};
+  public canvasId = 0;
+
 
   public state: any[] = [];
   public mods: number = 0;
@@ -59,6 +85,7 @@ export class FabricjsEditorComponent implements AfterViewInit {
 
     this.canvas.on({
       'object:moving': (e) => {
+        // console.log(e);
       },
       'object:modified': (e) => {
         this.savehistory()
@@ -75,12 +102,36 @@ export class FabricjsEditorComponent implements AfterViewInit {
       'selection:cleared': (e) => {
         this.selected = null;
         this.resetPanels();
+      },
+      'mouse:move': (e) => {
+        console.log(e);
+        this.canvas.on({
+          'mouse:move': (e) => {
+            // console.log("canvas", this.canvas);
+           
+            let tooltip2 = document.getElementById('addImage');
+            var p = this.canvas.getPointer(e.e);
+            console.log(e.target);
+    
+            if(e.target != null) {
+              tooltip2.style.visibility = "visible";
+              tooltip2.style.left = p.x + 430 + "px";
+              tooltip2.style.top = p.y + 80 + "px";
+              let target: keyable = e.target;
+              let cacheKey = target?.id;
+              if(cacheKey) {                
+                tooltip2.innerHTML = this.tooltipStr[cacheKey];
+              }
+            } else {
+              
+              tooltip2.style.visibility = 'hidden';
+            }
+          }
+        });
       }
     });
-
     this.canvas.setWidth(this.size.width);
     this.canvas.setHeight(this.size.height);
-
     // get references to the html canvas element & its context
     this.canvas.on('mouse:down', (e) => {
       const canvasElement: any = document.getElementById('canvas');
@@ -195,20 +246,25 @@ export class FabricjsEditorComponent implements AfterViewInit {
   }
 
   // Block "Add text"
-
   addText() {
+    let id = "texture-"+this.canvasId;
+    this.tooltipStr[id] = "tooltip for text";
+    this.canvasId++;
+
+    const options: ITextOptionsWithId = {
+      left: 10,
+      top: 20,
+      fontFamily: 'helvetica',
+      angle: 0,
+      fill: '#000000',
+      scaleX: 0.5,
+      scaleY: 0.5,
+      fontWeight: '',
+      hasRotatingPoint: true,
+      id: id,
+    };
     if (this.textString) {
-      const text = new fabric.IText(this.textString, {
-        left: 10,
-        top: 10,
-        fontFamily: 'helvetica',
-        angle: 0,
-        fill: '#000000',
-        scaleX: 0.5,
-        scaleY: 0.5,
-        fontWeight: '',
-        hasRotatingPoint: true
-      });
+      const text = new fabric.IText(this.textString, options);
 
       this.extend(text, this.randomId());
       this.canvas.add(text);
@@ -240,16 +296,54 @@ export class FabricjsEditorComponent implements AfterViewInit {
   // Block "Upload Image"
 
   addImageOnCanvas(url) {
+
+    let id = "Image-" + this.canvasId;
+    this.tooltipStr[id] = id;
+    this.canvasId = this.canvasId + 1;
+
+    const options: IImageOptionsWithId = {
+      left: 10,
+      top: 10,
+      angle: 0,
+      padding: 10,
+      cornerSize: 10,
+      hasRotatingPoint: true,
+      id: id,
+    }
     if (url) {
       fabric.Image.fromURL(url, (image) => {
-        image.set({
-          left: 10,
-          top: 10,
-          angle: 0,
-          padding: 10,
-          cornerSize: 10,
-          hasRotatingPoint: true
-        });
+        image.set(options);
+        console.log(image);
+        // this.canvas.on({
+        //   'mouse:move': (e) => {
+        //     // console.log("canvas", this.canvas);
+           
+        //     let tooltip2 = document.getElementById('addImage');
+        //     var p = this.canvas.getPointer(e.e);
+        //     console.log(typeof e.target);
+    
+        //     if(e.target != null) {
+        //       tooltip2.style.visibility = "visible";
+        //       tooltip2.style.left = p.x + 430 + "px";
+        //       tooltip2.style.top = p.y + 80 + "px";
+        //       let target: keyable = e.target;
+        //       let cacheKey = target?.cacheKey;
+        //       let text = target?.text;
+        //       if(cacheKey) {                
+        //         tooltip2.innerHTML = this.tooltipStr[cacheKey];
+        //         // console.log(cacheKey);
+        //       } else if (text){
+        //         tooltip2.innerHTML = text;
+        //       }
+        //       // tooltip2.innerHTML = "cacheKey";
+        //       // console.log(tooltip2);
+        //     } else {
+              
+        //       tooltip2.style.visibility = 'hidden';
+        //     }
+        //   }
+        // });
+
         image.scaleToWidth(200);
         image.scaleToHeight(200);
         this.extend(image, this.randomId());
@@ -277,39 +371,72 @@ export class FabricjsEditorComponent implements AfterViewInit {
 
   addFigure(figure) {
     let add: any;
+    let id = "texture-" + this.canvasId;
+    this.tooltipStr[id] = figure;
+    this.canvasId = this.canvasId + 1;
+
     switch (figure) {
       case 'rectangle':
-        add = new fabric.Rect({
-          width: 200, height: 100, left: 10, top: 10, angle: 0,
-          fill: '#3f51b5'
-        });
+        const options_1: IRectOptionsWithId = {
+          width: 200, height: 100, left: 10, top: 20, angle: 0,
+          fill: '#3f51b5',
+          id: id,
+        }
+        add = new fabric.Rect(options_1);
         break;
       case 'square':
-        add = new fabric.Rect({
-          width: 100, height: 100, left: 10, top: 10, angle: 0,
-          fill: '#4caf50'
-        });
+        const options_2: IRectOptionsWithId = {
+          width: 100, height: 100, left: 10, top: 20, angle: 0,
+          fill: '#4caf50', id: id
+        }
+        add = new fabric.Rect(options_2);
         break;
       case 'triangle':
-        add = new fabric.Triangle({
-          width: 100, height: 100, left: 10, top: 10, fill: '#2196f3'
-        });
+        const options_3: ITriangleOptionsWithId = {
+          width: 100, height: 100, left: 10, top: 20, fill: '#2196f3', id: id
+        }
+        add = new fabric.Triangle(options_3);
         break;
       case 'circle':
-        add = new fabric.Circle({
-          radius: 50, left: 10, top: 10, fill: '#ff5722'
-        });
+        const options_4: ICircleOptionsWithId = {
+          radius: 50, left: 10, top: 20, fill: '#ff5722', id: id
+        };
+        add = new fabric.Circle(options_4);
         break;
       case 'ellipse':
-        add = new fabric.Ellipse({
+        const ellipseOptions: IEllipseOptionsWithId = {
           rx: 80,
           ry: 40,
           fill: '#ff5722',
           stroke: 'green',
-          strokeWidth: 3
-        });
+          strokeWidth: 3,
+          id: id
+        };
+        add = new fabric.Ellipse(ellipseOptions);
         break;
     }
+    console.log(add);
+    // this.canvas.on({
+    //   'mouse:move': (e) => {
+    //     // console.log("canvas", this.canvas);
+       
+    //     let tooltip2 = document.getElementById('addImage');
+    //     var p = this.canvas.getPointer(e.e);
+    //     if(e.target != null) {
+    //       tooltip2.style.visibility = "visible";
+    //       tooltip2.style.left = p.x + 430 + "px";
+    //       tooltip2.style.top = p.y + 80 + "px";
+    //       let target: keyable = e.target;
+    //       let cacheKey = target?.cacheKey;
+    //       console.log("cacheKey", cacheKey)
+    //       tooltip2.innerHTML = "This is " + this.tooltipStr[id] + " tool";
+    //       // tooltip2.innerHTML = "cacheKey";
+    //     } else {
+    //       tooltip2.style.visibility = 'hidden';
+    //     }
+    //   }
+    // });
+
     this.extend(add, this.randomId());
     this.canvas.add(add);
     this.selectItemAfterAdded(add);

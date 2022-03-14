@@ -61,8 +61,8 @@
         </div>
     </div>
 </nav>
-<!-- left sidebar -->
 <div class="d-flex main__content" style="overflow: hidden;">
+    <!-- left sidebar -->
     <div class="d-flex align-items-start" style="z-index: 1;">
         <div class="nav flex-column nav-pills" id="v-pills-tab" role="tablist" aria-orientation="vertical">
             <a class="nav-link active" id="v-pills-home-tab" data-bs-toggle="pill" (click)="openTryFunction(0)"
@@ -322,7 +322,7 @@
                     <ul class="photos__box">
                         <li class="d-inline-block">
                             <div class="position-relative temp__item">
-                                <img src="assets/images/eph/p-1.jpg" class="photos__img" width="72"
+                                <img id="#box" src="assets/images/eph/p-1.jpg" class="photos__img" width="72"
                                     (click)="addPhotos($event)">
                             </div>
                         </li>
@@ -383,9 +383,9 @@
                 <div class="text__scroll__box px-3">
                     <p class=""><strong>Click text to add to page</strong></p>
                     <div class="btns">
-                        <button class="btn heading__btn" (click)="addText(120)">Add a heading</button>
-                        <button class="btn sub__heading heading__btn" (click)="addText(92)">Add a subheading</button>
-                        <button class="btn body__text heading__btn" (click)="addText(64)">Add a little bit of body
+                        <button class="btn heading__btn" (click)="addText(100)">Add a heading</button>
+                        <button class="btn sub__heading heading__btn" (click)="addText(120)">Add a subheading</button>
+                        <button class="btn body__text heading__btn" (click)="addText(140)">Add a little bit of body
                             text</button>
                     </div>
 
@@ -416,43 +416,43 @@
                         </div>
                     </div>
                     <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
-                        <div class="custom-item-title">Text Align</div>
+                        <!-- <div class="custom-item-title">Text Align</div> -->
                         <div class="custom-item-body">
                             <div class="btn-group" role="group" aria-label="...">
-                                <button type="button" class="btn btn-primary" [ngClass]="{'active': canvas.props.textAlign == 'left' }" (click)="setTextAlign('left')">
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'left' }" (click)="setTextAlign('left')">
                                     <i class="fa fa-align-left m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary" [ngClass]="{'active': canvas.props.textAlign == 'center' }" (click)="setTextAlign('center')">
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'center' }" (click)="setTextAlign('center')">
                                     <i class="fa fa-align-center m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary" [ngClass]="{'active': canvas.props.textAlign == 'right' }" (click)="setTextAlign('right')">
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'right' }" (click)="setTextAlign('right')">
                                     <i class="fa fa-align-right m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary" [ngClass]="{'active': canvas.props.textAlign == 'justify' }" (click)="setTextAlign('justify')">
+                                <button type="button" class="btn btns-primary" [ngClass]="{'active': canvas.props.textAlign == 'justify' }" (click)="setTextAlign('justify')">
                                     <i class="fa fa-align-justify m-0"></i>
                                 </button>
                             </div>
                         </div>
                     </div>
                     <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
-                        <div class="custom-item-title">Style</div>
+                        <!-- <div class="custom-item-title">Style</div> -->
                         <div class="custom-item-body ">
                             <div class="btn-group" role="group" aria-label="...">
-                                <button type="button" class="btn btn-primary btn-sm" [ngClass]="{'active': canvas.props.fontWeight }" (click)="setBold()">
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': canvas.props.fontWeight }" (click)="setBold()">
                                     <i class="fa fa-bold m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary btn-sm" [ngClass]="{'active': canvas.props.fontStyle }" (click)="setFontStyle()">
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': canvas.props.fontStyle }" (click)="setFontStyle()">
                                     <i class="fa fa-italic m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary btn-sm" [ngClass]="{'active': hasTextDecoration('underline') }"
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': hasTextDecoration('underline') }"
                                     (click)="setTextDecoration('underline')">
                                     <i class="fa fa-underline m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary btn-sm" [ngClass]="{'active': hasTextDecoration('overline') }"
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': hasTextDecoration('overline') }"
                                     (click)="setTextDecoration('overline')">
                                     <i class="fa fa-underline fa-flip-vertical m-0"></i>
                                 </button>
-                                <button type="button" class="btn btn-primary btn-sm" [ngClass]="{'active': hasTextDecoration('line-through') }"
+                                <button type="button" class="btn btns-primary btn-sm" [ngClass]="{'active': hasTextDecoration('line-through') }"
                                     (click)="setTextDecoration('line-through')">
                                     <i class="fa fa-strikethrough m-0"></i>
                                 </button>
@@ -462,9 +462,16 @@
                     <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
                         <div class="custom-item-title">Font Size</div>
                         <div class="custom-item-body">
-                            <input type="range" [(ngModel)]="canvas.props.fontSize" (change)="setFontSize()" step="1" min="1" max="120">{{canvas.props.fontSize}}</div>
+                            <div class="d-flex justify-content-start align-items-center fontSize-height border">
+                                <input class="font-input" [(ngModel)]="canvas.props.fontSize" (change)="setFontSize()" list="menace" name="menace">
+                                <div class="allow-down-icon"><img src="assets/images/icons/caret-down-solid.svg" width="18" height="18" alt="allow-down-icon"></div>
+                            </div>    
+                            <datalist id="menace">
+                                <option *ngFor="let menace of menaces">{{ menace }}</option>
+                            </datalist>
+                            <!-- <input type="range" [(ngModel)]="canvas.props.fontSize" (change)="setFontSize()" step="1" min="1" max="120">{{canvas.props.fontSize}}</div> -->
                     </div>
-                    <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
+                    <!-- <div class="pt-2" *ngIf="canvas.selected && canvas.textEditor">
                         <div class="custom-item-title">Line Height</div>
                         <div class="custom-item-body">
                             <input type="range" [(ngModel)]="canvas.props.lineHeight" (change)="setLineHeight()" step="0.1" min="0" max="10">{{canvas.props.lineHeight}}</div>
@@ -473,7 +480,7 @@
                         <div class="custom-item-title">Char Spacing</div>
                         <div class="custom-item-body">
                             <input type="range" [(ngModel)]="canvas.props.charSpacing" (change)="setCharSpacing()" step="10" min="-200" max="800">{{canvas.props.charSpacing}}</div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
             <!--.//text-->
@@ -516,7 +523,6 @@
         <!--.//tab_-content-->
     </div>
 
-
     <!-- ******* Right Panel ******* --------------------------------------------------------------------******* ------------------------------------------------------------>
     <div class="right__panel" id="rightActionPanel">
         <div class="header__panel p-1">
@@ -524,16 +530,25 @@
                 <div class="d-flex align-items-center">
                     <div class="d-flex justify-content-between align-items-center" *ngIf="canvas.selected && canvas.selected.type != 'group'">
                         <div class="custom-item-title">&nbsp;&nbsp;&nbsp;&nbsp;<strong>OPACITY:</strong> &nbsp;&nbsp;</div>
-                            <input type="range" [(ngModel)]="canvas.props.opacity" (change)="setOpacity()">{{canvas.props.opacity}}
+                        <div class="d-flex align-items-center border">
+                            <input class="font-input" list="menace" name="menace" value="100">                        
+                            <img src="assets/images/icons/caret-down-solid.svg" width="18" height="18" alt="allow-down-icon">
+                        </div>
+                        <datalist id="menace">
+                            <option *ngFor="let opacity of opacities">{{ opacity }}</option>
+                        </datalist>
+                        
+                        <!-- <input type="range" [(ngModel)]="canvas.props.opacity" (change)="setOpacity()">{{canvas.props.opacity}} -->
                     </div>
                     <div class="d-flex justify-content-between align-items-center" *ngIf="canvas.selected && canvas.textEditor || canvas.selected && canvas.figureEditor">
                         <div class="custom-item-title">&nbsp;&nbsp;&nbsp;&nbsp;<strong>COLOR:</strong> &nbsp;&nbsp;</div>
                         <div class="custom-item-body">
-                            <input type="text" style="width: 80px; padding: 3px 8px;" class="form-control" [cpPosition]="'bottom'" [(colorPicker)]="canvas.props.fill" [style.background]="canvas.props.fill"
-                                [value]="canvas.props.fill" (colorPickerChange)="setFill()">
+                            <div class="d-flex justify-content-between align-items-center border">
+                                <input ejs-colorpicker type="color" id="colorpicker" />
+                                <div class="color-field-icon"><img src="assets/images/icons/caret-down-solid.svg" width="18" height="18" alt="allow-down-icon"></div>
+                            </div>                               
                         </div>
                     </div>
-                    
                 </div>
 
                 <div class="d-flex align-items-center right__wrapp">
@@ -562,7 +577,7 @@
                             </path>
                         </svg>
                     </button>
-                    <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected || canvas.selected.type == 'group'" (click)="clone();">
+                    <!-- <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected || canvas.selected.type == 'group'" (click)="clone();">
                         <span class="badge bg-dark tooltip">Clone</span>
                         <svg class="me-0" width="24" height="24" viewBox="0 0 24 24" fill="none"
                             xmlns="http://www.w3.org/2000/svg">
@@ -576,7 +591,7 @@
                     <button class="btn p-0 position-relative me-4" [disabled]="!canvas.selected" (click)="cleanSelect();">
                         <span class="badge bg-dark tooltip">Unselect</span>
                         <i class="fa fa-remove" aria-hidden="true"></i>
-                    </button>
+                    </button> -->
                 </div>
             </div>
         </div>
@@ -586,7 +601,6 @@
                 <angular-editor-fabric-js #canvas (selectedEvent)="canvasselect($event)"></angular-editor-fabric-js>
             </div>
         </div>
-
 
         <!-- bottom action panel ===> rightBottomActionPanel->added js from custom.js --------------------------->
         <div class="bottom__panel w-100">
@@ -628,22 +642,32 @@
                 <div></div>
 
                 <div class="d-flex align-items-center right__wrapp">
-                    <div class="d-flex me-4">
+                    <div class="d-flex">
                         <input type="range" class="form-range" id="customRange1" [ngModel]="zoom"
                             (ngModelChange)="zoomChange($event)" min="10" max="300">
                         <label for="customRange1" style="padding-top:3px" class="fw-600 ps-3" data-bs-toggle="tooltip"
                             data-bs-placement="top" title="Tooltip on top">{{zoom}}%</label>
                     </div>
-                    <button class="btn p-2 me-3" (click)="setzoom(50);"> &times;0.5</button>
+                    <!-- <button class="btn p-2 me-3" (click)="setzoom(50);"> &times;0.5</button>
                     <button class="btn p-2 me-3" (click)="setzoom(100);"> &times;1</button>
                     <button class="btn p-2 me-3" (click)="setzoom(200);"> &times;2</button>
-                    <button class="btn p-2 me-3" (click)="setzoom(300);"> &times;3</button>
+                    <button class="btn p-2 me-3" (click)="setzoom(300);"> &times;3</button> -->
                 </div>
             </div>
         </div>
 
-
     </div>
     <!--.///right____panel-->
-
+    <div class="d-flex justify-content-center">
+        <div href="#" title="Hello from speech bubble!" id="addText" class="image-tooltip">This is Add Text tool</div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div href="#" title="Hello from speech bubble!" id="addImage" class="image-tooltip">This is Add Image tool</div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div href="#" title="Hello from speech bubble!" id="addRectangle" class="image-tooltip">This is Add Rectangle tool</div>
+    </div>
+    <div class="d-flex justify-content-center">
+        <div href="#" title="Hello from speech bubble!" id="addSquare" class="image-tooltip">This is Add Square tool</div>
+    </div>
 </div>

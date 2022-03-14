@@ -9,23 +9,23 @@ import { AppComponent } from './app.component';
 // import { FabricjsEditorModule } from 'projects/angular-editor-fabric-js/src/public-api';
 import { LayoutModule } from './layout/layout.module';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { ColorPickerModule } from '@syncfusion/ej2-angular-inputs';
+import { enableRipple } from '@syncfusion/ej2-base';
 
-
+enableRipple(true);
 
 @NgModule({
-  declarations: [
-    AppComponent
-  ],
+  declarations: [AppComponent],
+
   imports: [
     BrowserModule,
+    ColorPickerModule ,
     // FabricjsEditorModule,
     AppRoutingModule,
     HttpClientModule,
     FormsModule,
     BrowserAnimationsModule,
-    
-    LayoutModule
-
+    LayoutModule,
   ],
   providers: [],
   bootstrap: [AppComponent]
